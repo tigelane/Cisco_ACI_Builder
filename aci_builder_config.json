@@ -12,17 +12,22 @@
     "nodes": {
         "__comment__1": "spine and leaf refer only to the device type.  Naming is done in the specific sections.  We could add rack locations later to this section.",
         "switches" : [
-            ["spine", "SAL1Z474V8N"],
-            ["leaf", "SAL1910AX9U"],
-            ["leaf", "SAL1910AL9A"]
+            ["spine", "SAa18474V8N"],
+            ["leaf", "SAA1910AL9U"],
+            ["leaf", "SAA1910AL9E"]
+        ],
+        "switches-real" : [
+            ["spine", "SAL18474V8N"],
+            ["leaf", "SAL1910AL9U"],
+            ["leaf", "SAL1910AL9E"]
         ],
         "spines": {
             "__comment__": "This will create names like 'Spine-101'",
-            "namebase": "Spine_",
+            "namebase": "spine_",
             "numberbase": "101"
         },
         "leafs":  {
-            "namebase": "Leaf_",
+            "namebase": "leaf_",
             "numberbase": "201"
         }
     },
@@ -40,8 +45,8 @@
 
     "time":  {
         "servers": [
-            "0.pool.ntp.org",
-            "1.pool.ntp.org"
+            "time1.google.com",
+            "time2.google.com"
         ],
 
         "polling":  {
@@ -62,20 +67,20 @@
         ]
     },
 
-
     "vmware_vmm":  {
         "__comment__": "namebase will be used to start the naming of everything releated to VMware",
         "namebase": "c1_lko-lab",
-        "vcenterip": "172.31.0.20",
+        "vcenterip": "172.18.18.5",
         "vlan_start": "2000",
         "vlan_end": "2099",
-        "user": "administrator",
-        "password": "cisco!098",
-        "datacenter": "ACI_Lab"
+        "user": "administrator@vsphere.local",
+        "password": "Cisco!098",
+        "datacenter": "lko_datacenter"
     },
 
-    "esxi_servers": {
+    "blade_servers": {
         "__comment__0": "Interface speed can be 1 or 10",
+        "namebase": "ucs_mini",
         "speed": "10",
         "cdp": "enabled",
         "lldp": "disabled",
@@ -83,5 +88,48 @@
         "__comment__2": "Only a single interface statement can be used in this script",
         "__comment__3": "valid values: 1/13 or 1/22-24",
         "interfaces": "1/17-18"
-    }
+    },
+
+    "Tenants": [{
+        "name": "TEST-VMware_mgmt-2",
+        "bridgedomain": "vmware_mgmt",
+        "vrf": "vmware_mgmt",
+        "gateway": {
+                "ext_epg": "all_internet",
+                "network": "0.0.0.0/0",
+                "area": "18",
+                "routerID": "22.22.22.22",
+                "nodeID": "201",
+                "interface": {
+                    "ipaddress": "172.18.19.2/24",
+                    "speed": "1G",
+                    "cdp": "enabled",
+                    "lldp": "disabled",
+                    "interface1": "1",
+                    "interface2": "12",
+                    "vlan": "2"
+                    }
+                }
+            },{
+        "name": "TEST-Integra2",
+        "bridgedomain": "Integra",
+        "vrf": "Integra",
+        "gateway": {
+                "ext_epg": "all_internet",
+                "network": "0.0.0.0/0",
+                "area": "3",
+                "routerID": "33.33.33.33",
+                "nodeID": "201",
+                "interface": {
+                    "ipaddress": "172.31.255.2/24",
+                    "speed": "1G",
+                    "cdp": "enabled",
+                    "lldp": "disabled",
+                    "interface1": "1",
+                    "interface2": "12",
+                    "vlan": "3"
+                    }
+                }
+            }            
+        ]
 }

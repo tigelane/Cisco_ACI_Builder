@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#!/usr/bin/env python
 ################################################################################
 #                                                                                                                                  
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may   
@@ -79,25 +78,25 @@ def create_config_file():
     "credentials":  {
         "__comment__": "This information is not secure and should only be used for initial setup",
         "accessmethod": "https",
-        "ip_addr": "172.31.0.0",
+        "ip_addr": "172.20.0.10",
         "user": "admin",
-        "password": "cisco"
+        "password": "cisco!098"
     },
 
     "nodes": {
         "__comment__1": "spine and leaf refer only to the device type.  Naming is done in the specific sections.  We could add rack locations later to this section.",
         "switches" : [
-            ["spine", "SAL18418V8N"],
-            ["leaf", "SAL1910AL3M"],
-            ["leaf", "SAL1910BL7L"]
+            ["spine", "SAA18474V8N"],
+            ["leaf", "SAA1910AL9U"],
+            ["leaf", "SAA1910AL9E"]
         ],
         "spines": {
             "__comment__": "This will create names like 'Spine-101'",
-            "namebase": "Spine",
+            "namebase": "spine_",
             "numberbase": "101"
         },
         "leafs":  {
-            "namebase": "Leaf",
+            "namebase": "leaf_",
             "numberbase": "201"
         }
     },
@@ -108,15 +107,15 @@ def create_config_file():
     },
 
     "oob": {
-        "dg_mask": "172.31.0.1/24",
-        "start_ip": "172.31.0.12",
-        "end_ip": "172.31.0.19"
+        "dg_mask": "172.20.0.1/24",
+        "start_ip": "172.20.0.12",
+        "end_ip": "172.20.0.19"
     },
 
     "time":  {
         "servers": [
-            "0.pool.ntp.org",
-            "1.pool.ntp.org"
+            "time1.google.com",
+            "time2.google.com"
         ],
 
         "polling":  {
@@ -133,24 +132,24 @@ def create_config_file():
             "8.8.8.7"
         ],
         "domains": [
-            "c1lab.com"
+            "acilab.com"
         ]
     },
 
-
     "vmware_vmm":  {
         "__comment__": "namebase will be used to start the naming of everything releated to VMware",
-        "namebase": "c1_lko-lab",
-        "vcenterip": "172.31.0.20",
+        "namebase": "aci_lab",
+        "vcenterip": "172.18.18.5",
         "vlan_start": "2000",
         "vlan_end": "2099",
-        "user": "administrator",
-        "password": "cisco!098",
-        "datacenter": "ACI_Lab"
+        "user": "administrator@vsphere.local",
+        "password": "Cisco!098",
+        "datacenter": "aci_datacenter"
     },
 
-    "esxi_servers": {
+    "blade_servers": {
         "__comment__0": "Interface speed can be 1 or 10",
+        "namebase": "ucs_1",
         "speed": "10",
         "cdp": "enabled",
         "lldp": "disabled",
@@ -158,7 +157,50 @@ def create_config_file():
         "__comment__2": "Only a single interface statement can be used in this script",
         "__comment__3": "valid values: 1/13 or 1/22-24",
         "interfaces": "1/17-18"
-    }
+    },
+
+    "Tenants": [{
+        "name": "TEST-Zynga",
+        "bridgedomain": "Zynga",
+        "vrf": "Zynga",
+        "gateway": {
+                "ext_epg": "all_internet",
+                "network": "0.0.0.0/0",
+                "area": "18",
+                "routerID": "22.22.22.22",
+                "nodeID": "201",
+                "interface": {
+                    "ipaddress": "172.18.19.2/24",
+                    "speed": "1G",
+                    "cdp": "enabled",
+                    "lldp": "disabled",
+                    "interface1": "1",
+                    "interface2": "12",
+                    "vlan": "2"
+                    }
+                }
+            },{
+        "name": "TEST-PopCap",
+        "bridgedomain": "PopCap",
+        "vrf": "PopCap",
+        "gateway": {
+                "ext_epg": "all_internet",
+                "network": "0.0.0.0/0",
+                "area": "3",
+                "routerID": "33.33.33.33",
+                "nodeID": "201",
+                "interface": {
+                    "ipaddress": "172.31.255.2/24",
+                    "speed": "1G",
+                    "cdp": "enabled",
+                    "lldp": "disabled",
+                    "interface1": "1",
+                    "interface2": "12",
+                    "vlan": "3"
+                    }
+                }
+            }            
+        ]
 }
 	'''
 	config_file.write(config_file_text)
@@ -285,10 +327,18 @@ def main(argv):
     # Add leafs and spines to the system
     import aci_builder_switches as Switches
     Switches.build_switches(rest_session, system_config['nodes'])
+    print ("\nAdded switches to the system.\n")
 
     # Configure basics of the fabric
     import aci_builder_fabric as Fabric
     Fabric.build_fabric(cobra_session, system_config)
+    print ("\nBuilt the fabric.\n")
+
+    # Configure a Tenant L3 Interface
+    import aci_builder_tenant as Tenant
+    for tenant in system_config['Tenants']:
+        Tenant.build_tenant(acitoolkit_session, tenant)
+        print ("\nBuilt tenant: {0}\n".format(tenant['name']))        
 
     print ("\nAll operations completed.\n")
 
