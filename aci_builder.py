@@ -86,9 +86,9 @@ def create_config_file():
     "nodes": {
         "__comment__1": "spine and leaf refer only to the device type.  Naming is done in the specific sections.  We could add rack locations later to this section.",
         "switches" : [
-            ["spine", "SAA18474V8N"],
-            ["leaf", "SAA1910AL9U"],
-            ["leaf", "SAA1910AL9E"]
+            ["spine", "SAA13471V8L"],
+            ["leaf", "SAA1716AM6U"],
+            ["leaf", "SAA1214ZP9Q"]
         ],
         "spines": {
             "__comment__": "This will create names like 'Spine-101'",
@@ -103,7 +103,7 @@ def create_config_file():
 
     "bgp":  {
         "__comment__": "All spines will be used as BGP route reflectors.",
-        "asnum": "65001"
+        "asnum": "64999"
     },
 
     "oob": {
@@ -310,7 +310,6 @@ def main(argv):
             create_config_file()
             exit()
         else:
-            print ("I think there is a config file")
             config_file_name = argv[1]
 
     system_config = import_config(config_file_name)
@@ -323,25 +322,33 @@ def main(argv):
     acitoolkit_session = toolkit_login(admin)
     rest_session = rest_login(admin)
 
-    print ("\nLogged into system.\n")
+    print ("Sucessful login to the APIC.\n")
 
     # Add leafs and spines to the system
     import aci_builder_switches as Switches
     Switches.build_switches(rest_session, system_config['nodes'])
-    print ("\nAdded switches to the system.\n")
+    print ("Done adding switches to the system.\n")
 
     # Configure basics of the fabric
     import aci_builder_fabric as Fabric
-    #Fabric.build_fabric(cobra_session, system_config)
-    print ("\nBuilt the fabric.\n")
+    Fabric.build_fabric(cobra_session, system_config)
+    print ("\nDone building the fabric.\n")
 
-    # Configure a Tenant L3 Interface
+    # Configure a Tenants
     import aci_builder_tenant as Tenant
     for tenant in system_config['Tenants']:
-        #Tenant.build_tenant(acitoolkit_session, tenant)
-        print ("\nBuilt tenant: {0}\n".format(tenant['name']))        
+        result = Tenant.build_tenant(acitoolkit_session, tenant)
+        if result == True:
+            print ("Built tenant: {0}\n".format(tenant['name']))
+        else:
+             print ("\nERROR:  Tenant: {0} had a problem\n".format(tenant['name']))
 
-    print ("\nAll operations completed.\n")
+    # Configure Physical Access
+    import aci_builder_access as Access
+    Access.build_access(cobra_session, system_config)
+    print ("\nDone building physical access to the fabric.\n")
+
+    print ("All operations attempted.  Please check the scrolled text for errors.\n")
 
 if __name__ == '__main__':
     main(sys.argv)
