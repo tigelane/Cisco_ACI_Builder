@@ -80,7 +80,7 @@ def create_config_file():
         "accessmethod": "https",
         "ip_addr": "172.20.0.10",
         "user": "admin",
-        "password": "cisco!098"
+        "password": "cisco123"
     },
 
     "nodes": {
@@ -129,7 +129,7 @@ def create_config_file():
         "__comment__": "The first server and domain will be preferred.",
         "servers":  [
             "8.8.8.8",
-            "8.8.8.7"
+            "8.8.4.4"
         ],
         "domains": [
             "acilab.com"
@@ -303,14 +303,15 @@ def import_config(config_file_name):
     return system_config
 
 def main(argv):
-    # Supression of warnings for SSL certs and all other errors
-    # f = open(os.devnull, 'w')
-    # sys.stderr = f
+    global config_file_name
 
     if len(argv) > 1:
         if argv[1] == '--makeconfig':
             create_config_file()
             exit()
+        else:
+            print ("I think there is a config file")
+            config_file_name = argv[1]
 
     system_config = import_config(config_file_name)
     creds = system_config['credentials']
@@ -331,13 +332,13 @@ def main(argv):
 
     # Configure basics of the fabric
     import aci_builder_fabric as Fabric
-    Fabric.build_fabric(cobra_session, system_config)
+    #Fabric.build_fabric(cobra_session, system_config)
     print ("\nBuilt the fabric.\n")
 
     # Configure a Tenant L3 Interface
     import aci_builder_tenant as Tenant
     for tenant in system_config['Tenants']:
-        Tenant.build_tenant(acitoolkit_session, tenant)
+        #Tenant.build_tenant(acitoolkit_session, tenant)
         print ("\nBuilt tenant: {0}\n".format(tenant['name']))        
 
     print ("\nAll operations completed.\n")

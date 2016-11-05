@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 ################################################################################
 #                                                                                                                                  
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may   
@@ -124,10 +123,10 @@ def load_nodes(nodes):
 
     for switch in nodes['switches']:
         if switch[0] == 'leaf':
-            newNode = dhcpNode('','',str(leaf_number),'','',nodes['leafs']['namebase'] + str(leaf_number),switch[1],'','')
+            newNode = dhcpNode('','',switch[1],'','',nodes['leafs']['namebase'] + str(leaf_number),str(leaf_number),'','')
             leaf_number += 1
         else:
-            newNode = dhcpNode('','',str(spine_number),'','',nodes['spines']['namebase'] + str(spine_number),switch[1],'','')
+            newNode = dhcpNode('','',switch[1],'','',nodes['spines']['namebase'] + str(spine_number),str(spine_number),'','')
             spine_number += 1
 
         new_nodes.append(newNode)
@@ -140,7 +139,7 @@ def add_node(node, admin):
     junk = raw_input('(Yes) or No: ')
     if junk.lower() == 'no' or junk.lower() == 'n':
         print ('Node skipped.')
-        return
+        return False
 
     print ("YES - Ok, let's add it.\n")
 
