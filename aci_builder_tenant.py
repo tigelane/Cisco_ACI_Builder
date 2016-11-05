@@ -31,10 +31,13 @@ from acitoolkit.acitoolkit import OSPFInterface, Contract, BridgeDomain
 
 def build_tenant(session, tenant):
 
-    create_interface(session, tenant)
-
-    print ("Created a Layer 3 External gateway in tenant {}.".format(tenant['name']))
-    print ("Everything seems to have worked if you are seeing this.")
+    try:
+        create_interface(session, tenant)
+        print ("Created a Layer 3 External gateway in tenant {}.".format(tenant['name']))
+        return True
+    except:
+        print ("ERROR: Problem creating tenant {}.".format(tenant['name']))
+        return False
 
 def create_interface(session, tenant):
     ''' The epgs are in the form of a dictionary with provide and consume.  
@@ -83,7 +86,7 @@ def create_interface(session, tenant):
     resp = session.push_to_apic(theTenant.get_url(),
                                 theTenant.get_json())
 
-    print resp.text
+    # print resp.text
     if not resp.ok:
         print('%% Error: Could not push configuration to APIC')
         print(resp.text)
