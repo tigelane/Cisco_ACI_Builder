@@ -134,7 +134,7 @@ def load_nodes(nodes):
     return new_nodes
 
 def add_node(node, admin):
-    print ('\nWould you like to add this device to the system?')
+    print ('\nWould you like to add this new device to the system?')
     print (node)
     junk = raw_input('(Yes) or No: ')
     if junk.lower() == 'no' or junk.lower() == 'n':
