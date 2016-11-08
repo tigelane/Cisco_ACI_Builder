@@ -37,7 +37,7 @@ description = '''
 
 import cobra.mit.access, cobra.mit.session
 import acitoolkit.acitoolkit as ACI
-import sys, os, getpass, random, string, json, requests
+import sys, os, getpass, string, json, requests
 
 config_file_name = 'aci_builder_config.json'
 connected = False
@@ -324,6 +324,12 @@ def main(argv):
 
     print ("Sucessful login to the APIC.\n")
 
+    #######
+    #
+    #  Starting building the fabric
+    #
+    #######
+
     # Add leafs and spines to the system
     import aci_builder_switches as Switches
     Switches.build_switches(rest_session, system_config['nodes'])
@@ -344,6 +350,7 @@ def main(argv):
              print ("\nERROR:  Tenant: {0} had a problem\n".format(tenant['name']))
 
     # Configure Physical Access
+    # This section assumes you have two leafs numbered 201 and 202
     import aci_builder_access as Access
     Access.build_access(cobra_session, system_config)
     print ("\nDone building physical access to the fabric.\n")
