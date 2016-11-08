@@ -350,10 +350,16 @@ def main(argv):
              print ("\nERROR:  Tenant: {0} had a problem\n".format(tenant['name']))
 
     # Configure Physical Access
+    # There are two methods and you can use them both or just one.
+    import aci_builder_vmware as VMware
+    VMware.build_vmware(cobra_session, acitoolkit_session, system_config)
+    print ("\nDone building VMware components.\n")
+
+    # Configure Physical Access
     # This section assumes you have two leafs numbered 201 and 202
-    import aci_builder_access as Access
-    Access.build_access(cobra_session, system_config)
-    print ("\nDone building physical access to the fabric.\n")
+    # import aci_builder_access as Access
+    # Access.build_access(cobra_session, system_config)
+    # print ("\nDone building physical access to the fabric.\n")
 
     print ("All operations attempted.  Please check the scrolled text for errors.\n")
 
