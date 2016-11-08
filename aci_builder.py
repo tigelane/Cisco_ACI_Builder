@@ -78,20 +78,20 @@ def create_config_file():
     "credentials":  {
         "__comment__": "This information is not secure and should only be used for initial setup",
         "accessmethod": "https",
-        "ip_addr": "172.20.0.10",
+        "ip_addr": "192.168.0.60",
         "user": "admin",
         "password": "cisco123"
     },
 
     "nodes": {
-        "__comment__1": "spine and leaf refer only to the device type.  Naming is done in the specific sections.  We could add rack locations later to this section.",
+        "__comment__1": "spine and leaf refer only to the device type and must be correct.  Naming is done in the specific sections.",
         "switches" : [
-            ["spine", "SAA13471V8L"],
-            ["leaf", "SAA1716AM6U"],
-            ["leaf", "SAA1214ZP9Q"]
+            ["spine", "SAL1914E6TR"],
+            ["leaf", "SAL1913E0MT"],
+            ["leaf", "SAL1913E0MZ"]
         ],
         "spines": {
-            "__comment__": "This will create names like 'Spine-101'",
+            "__comment__": "This will create names like 'spine_101'",
             "namebase": "spine_",
             "numberbase": "101"
         },
@@ -103,19 +103,18 @@ def create_config_file():
 
     "bgp":  {
         "__comment__": "All spines will be used as BGP route reflectors.",
-        "asnum": "64999"
+        "asnum": "65001"
     },
 
     "oob": {
-        "dg_mask": "172.20.0.1/24",
-        "start_ip": "172.20.0.12",
-        "end_ip": "172.20.0.19"
+        "dg_mask": "192.168.0.1/24",
+        "start_ip": "192.168.0.61",
+        "end_ip": "192.168.0.63"
     },
 
     "time":  {
         "servers": [
-            "time1.google.com",
-            "time2.google.com"
+            "10.201.25.10"
         ],
 
         "polling":  {
@@ -128,41 +127,51 @@ def create_config_file():
         {
         "__comment__": "The first server and domain will be preferred.",
         "servers":  [
-            "8.8.8.8",
-            "8.8.4.4"
+            "10.201.25.10"
         ],
         "domains": [
-            "acilab.com"
+            "pdxlab.local",
+            "pdx.local"
         ]
     },
 
     "vmware_vmm":  {
         "__comment__": "namebase will be used to start the naming of everything releated to VMware",
-        "namebase": "aci_lab",
+        "namebase": "pdxlab",
         "vcenterip": "172.18.18.5",
         "vlan_start": "2000",
-        "vlan_end": "2099",
+        "vlan_end": "2199",
         "user": "administrator@vsphere.local",
         "password": "Cisco!098",
-        "datacenter": "aci_datacenter"
+        "datacenter": "pdxlab_dc"
     },
 
-    "blade_servers": {
+    "servers_vmware": {
         "__comment__0": "Interface speed can be 1 or 10",
-        "namebase": "ucs_1",
-        "speed": "10",
+        "namebase": "ESXi",
+        "speed": "1G",
         "cdp": "enabled",
         "lldp": "disabled",
-        "__comment__1": "Interface configuration will be attached to all leaf switches",
-        "__comment__2": "Only a single interface statement can be used in this script",
+        "switch_range_name": "Rack1",
+        "comment_1": "The following two are the leafs that should be configured for these interfaces.",
+        "leaf1": "201",
+        "leaf2": "202",
+        "__comment__2": "Interface configuration will be attached to all leaf switches if using the aci toolkit method",
         "__comment__3": "valid values: 1/13 or 1/22-24",
-        "interfaces": "1/17-18"
+        "interfaces": "1/17-18",
+        "__comment__4": "Only a single range statement can be used if you are using the cobra method",
+        "interfaces_start": "3",
+        "interfaces_finish": "10"
     },
 
     "Tenants": [{
-        "name": "TEST-Zynga",
-        "bridgedomain": "Zynga",
-        "vrf": "Zynga",
+        "name": "management",
+        "bridgedomain": "management_bd",
+        "bd_subnets":[
+            {"gateway": "192.168.101.1/24", "preferred": "no"},
+            {"gateway": "192.168.102.1/24", "preferred": "yes"}
+        ],
+        "vrf": "management_vrf",
         "gateway": {
                 "ext_epg": "all_internet",
                 "network": "0.0.0.0/0",
@@ -171,18 +180,22 @@ def create_config_file():
                 "nodeID": "201",
                 "interface": {
                     "ipaddress": "172.18.19.2/24",
-                    "speed": "1G",
+                    "speed": "10G",
                     "cdp": "enabled",
                     "lldp": "disabled",
                     "interface1": "1",
-                    "interface2": "12",
+                    "interface2": "1",
                     "vlan": "2"
                     }
                 }
             },{
-        "name": "TEST-PopCap",
-        "bridgedomain": "PopCap",
-        "vrf": "PopCap",
+        "name": "pdxlab",
+        "bridgedomain": "pdxlab_bd",
+        "bd_subnets":[
+            {"gateway":"192.168.201.1/24", "preferred": "no"},
+            {"gateway":"192.168.202.1/24", "preferred": "yes"}
+        ],
+        "vrf": "pdxlab_vrf",
         "gateway": {
                 "ext_epg": "all_internet",
                 "network": "0.0.0.0/0",
@@ -191,11 +204,11 @@ def create_config_file():
                 "nodeID": "201",
                 "interface": {
                     "ipaddress": "172.31.255.2/24",
-                    "speed": "1G",
+                    "speed": "10G",
                     "cdp": "enabled",
                     "lldp": "disabled",
                     "interface1": "1",
-                    "interface2": "12",
+                    "interface2": "1",
                     "vlan": "3"
                     }
                 }
