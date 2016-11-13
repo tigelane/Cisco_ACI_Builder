@@ -348,6 +348,9 @@ def main(argv):
     Switches.build_switches(rest_session, system_config['nodes'])
     print ("Done adding switches to the system.\n")
 
+    print ('Please wait until the switches are visible in the APIC GUI')
+    input = raw_input('before continuing.  Once visable press Enter.')
+
     # Configure basics of the fabric
     import aci_builder_fabric as Fabric
     Fabric.build_fabric(cobra_session, system_config)
