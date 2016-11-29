@@ -365,7 +365,7 @@ def main(argv):
         else:
              print ("\nERROR:  Tenant: {0} had a problem\n".format(tenant['name']))
 
-    # Configure Physical Access
+    # Configure Physical Access and VMware
     # There are two methods and you can use them both or just one.
     import aci_builder_vmware as VMware
     VMware.build_vmware(cobra_session, acitoolkit_session, system_config)
