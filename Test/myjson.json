@@ -1,0 +1,87 @@
+{
+    "__comment__0": "All values in this file are strings.  Never use numbers.'",
+
+    "credentials":  {
+        "__comment__": "This information is not secure and should only be used for initial setup",
+        "accessmethod": "https",
+        "ip_addr": "172.31.0.10",
+        "user": "admin",
+        "password": "cisco!098"
+    },
+
+    "__comment__1": "spine and leaf refer only to the device type.  Naming is done in the specific sections.  We could add rack locations later to this section.",
+    "switches" : [
+        ["spine", "SAL18474V8N"],
+        ["leaf", "SAL1910AL9U"],
+        ["leaf", "SAL1910AL9E"]
+    ],
+
+    "spines": {
+        "__comment__": "This will create names like 'Spine-101'",
+        "namebase": "Spine",
+        "numberbase": "101"
+    },
+    
+    "leafs":  {
+        "namebase": "Leaf",
+        "numberbase": "201"
+    },
+
+    "bgp":  {
+        "__comment__": "All spines will be used as BGP route reflectors.",
+        "asnum": "65001"
+    },
+
+    "oob": {
+        "dg_mask": "172.31.0.1/24",
+        "start_ip": "172.31.0.12",
+        "end_ip": "172.31.0.19"
+    },
+
+    "time":  {
+        "servers": [
+            "0.pool.ntp.org",
+            "1.pool.ntp.org"
+        ],
+
+        "polling":  {
+            "minpoll": "4",
+            "maxpoll": "6"
+        }
+    },
+
+    "dns": 
+        {
+        "__comment__": "The first server and domain will be preferred.",
+        "servers":  [
+            "8.8.8.8",
+            "8.8.8.7"
+        ],
+        "domains": [
+            "c1lab.com"
+        ]
+    },
+
+
+    "vmware_vmm":  {
+        "__comment__": "namebase will be used to start the naming of everything releated to VMware",
+        "namebase": "c1_lko-lab",
+        "vcenterip": "172.31.0.20",
+        "vlan_start": "2000",
+        "vlan_end": "2099",
+        "user": "administrator",
+        "password": "cisco!098",
+        "datacenter": "ACI_Lab"
+    },
+
+    "esxi_servers": {
+        "__comment__0": "Interface speed can be 1 or 10",
+        "speed": "10",
+        "cdp": "enabled",
+        "lldp": "disabled",
+        "__comment__1": "Interface configuration will be attached to all leaf switches",
+        "__comment__2": "Only a single interface statement can be used in this script",
+        "__comment__3": "valid values: 1/13 or 1/22-24",
+        "interfaces": "1/17-18"
+    }
+}
